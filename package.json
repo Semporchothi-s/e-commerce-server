@@ -18,5 +18,9 @@
   "bugs": {
     "url": "https://github.com/Semporchothi-s/e-commerce-server/issues"
   },
-  "homepage": "https://github.com/Semporchothi-s/e-commerce-server#readme"
+  "homepage": "https://github.com/Semporchothi-s/e-commerce-server#readme",
+  "dependencies": {
+    "express": "^4.18.3",
+    "mongoose": "^8.2.0"
+  }
 }
