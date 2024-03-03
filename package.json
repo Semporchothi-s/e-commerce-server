@@ -1,0 +1,22 @@
+{
+  "name": "e-commerce-server",
+  "version": "1.0.0",
+  "description": "An Node.js backend for E-Commerce App",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Semporchothi-s/e-commerce-server.git"
+  },
+  "keywords": [
+    "e-com"
+  ],
+  "author": "Semporchothi S",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Semporchothi-s/e-commerce-server/issues"
+  },
+  "homepage": "https://github.com/Semporchothi-s/e-commerce-server#readme"
+}
