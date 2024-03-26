@@ -1,5 +1,6 @@
 const DBService = require("./db");
 const mongoose = require("mongoose")
+const Constants = require('../constants/constants')
 
 class MongoDB extends DBService {
     async connect() {
@@ -14,7 +15,7 @@ class MongoDB extends DBService {
 }
 
 async function connectToMongoDB() {
-    const conn = await mongoose.connect(constants.MONGOURL, {});
+    const conn = await mongoose.connect(Constants.mongoUrl, {});
     console.log('mongodb connected:');
 }
 
