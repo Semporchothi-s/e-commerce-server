@@ -12,6 +12,13 @@ class Errors  {
     
     static loggedIn = "Logged in successfully";
     static userCreated = "New user created successfully.";
+    
+    
+    static categoryCreationFailed = "Failed to create new category.";
+    static categoryCreated = "New category created successfully.";
+    static categoryAlreadyExists = "Category already exists";
+    static categoryStatusChanged = "Category status changed successfully";
+    static invalidCategory = "Invalid category";
 
 }
 
