@@ -1,10 +1,8 @@
-const mongoose = require("mongoose");
-const constants = require("../constants/constants");
-
-class DBService {
+class DataBase {
     async connect() {}
+    async disconnect(){}
 }
 
 
-module.exports = DBService
+module.exports = DataBase
 

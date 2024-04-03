@@ -32,7 +32,7 @@ class User {
 async function _findUser(body, res) {
     var _user = await _findUserByMailOrMobile(body);
     if (_user.length > 0) {
-        Response.success(res, Errors.loggedIn, _user);
+        Response.success(res, Errors.loggedIn, _user[0]);
     } else {
         Response.failed(res, Errors.userNotFound);
     }
@@ -110,7 +110,7 @@ async function saveUser(newUser, res) {
 async function _getUserDetails(body, res) {
     var currentUser = await user.find({ _id: body.id });
     if (currentUser.length > 0) {
-        Response.success(res, "", currentUser);
+        Response.success(res, "", currentUser[0]);
     } else {
         Response.failed(res, Errors.userNotFound);
     }

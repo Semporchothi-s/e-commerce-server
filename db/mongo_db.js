@@ -12,11 +12,22 @@ class MongoDB extends DBService {
             process.exit(1)
         }
     }
+
+    async disconnect(){
+        await _disconnect();
+    }
 }
 
 async function connectToMongoDB() {
-    const conn = await mongoose.connect(Constants.mongoUrl, {});
-    console.log('mongodb connected:');
+    var uri = Constants.mongoUrl
+
+    await mongoose.connect(uri, {});
+    console.log('mongodb connected:' + uri);
+}
+
+async function _disconnect(){
+    await mongoose.disconnect();
+    console.log('mongodb disconnected')
 }
 
 module.exports = MongoDB

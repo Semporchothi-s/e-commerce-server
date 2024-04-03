@@ -2,6 +2,7 @@ var category = require('../models/category');
 var Response = require('../response/response');
 var Errors = require('../constants/errors');
 var Constants = require('../constants/constants');
+const { isInvalidReq, isCategoryAvailable, createCategoryMap } = require('../helper_services/category_helper');
 
 class Category {
 
@@ -11,73 +12,110 @@ class Category {
     }
 
     static async get(req, res) {
-        var categoryList = await category.find({status: Constants.ACTIVE});
+        var categoryList = await category.find({ status: Constants.ACTIVE });
         Response.success(res, "", categoryList);
     }
 
     static async setStatus(req, res) {
         var body = req.body;
-        await category.findById(body.id).then (result => {
-            _validateResultAndUpdate(result, res, body);
+
+        if (!body.id) {
+            Response.failed(res, Errors.requiredCategoryId);
+            return;
+        } else {
+            await _findAndSetStatus(body, res);
         }
-        );
     }
 
-    static async update(req, res){
-        //TODO: 
+    static async update(req, res) {
+        var body = req.body;
+        _validateAndUpdate(body, res);
+    }
+
+    static async delete(req, res){
+        var body = req.body;
+        await category.deleteOne({_id: body.id}).then(value => {
+            Response.success(res, Errors.categoryRemoved, value);
+        })
+        
     }
 }
 
+
 async function _validateRequestAndSave(body, res) {
-    if (_isValidCreateReq(body)) {
+    if (isInvalidReq(body)) {
         Response.failed(res, Errors.emptyFields);
-    } else if (await _isCategoryAvailable(body)) {
+    } else if (await isCategoryAvailable(body)) {
         Response.failed(res, Errors.categoryAlreadyExists);
     }
     else {
-        var newCategory = _createCategoryMap(body);
+        var newCategory = createCategoryMap(body);
         await _saveCategory(newCategory, res);
     }
-}
-
-function _isValidCreateReq(body) {
-    return !body.categoryName || !body.image || !body.mimeType;
-}
-
-async function _isCategoryAvailable(body) {
-    return await category.find({ categoryName: { '$regex': body.categoryName, $options: 'i' }}).count() > 0;
-}
-
-function _createCategoryMap(body) {
-    return category({
-        categoryName: body.categoryName,
-        image: body.image,
-        mimeType: body.mimeType,
-        createdAt: Date(),
-    });
 }
 
 async function _saveCategory(newCategory, res) {
     await newCategory.save().then(value => {
         if (value.errors) {
             Response.failed(res, Errors.categoryCreationFailed);
+            return;
         } else {
             Response.success(res, Errors.categoryCreated, value);
         }
     });
 }
 
-function _validateResultAndUpdate(result, res, body) {
-    if (!result.errors) {
-        if (!result) {
-            Response.failed(res, Error.invalidCategory);
-        } else {
-            _updateCategory(result, body, res);
-        }
+async function _findAndSetStatus(body, res) {
+    await category.findById(body.id).then(result => {
+        _validateResultAndUpdate(result, res, body, true);
+    });
+}
+
+async function _validateAndUpdate(body, res){
+    if (!body.id) {
+        Response.failed(res, Errors.requiredCategoryId);
+        return;
+    }
+
+    if (isInvalidReq(body)) {
+        Response.failed(res, Errors.emptyFields);
+        return;
+    }
+
+    else {
+        await category.findById(body.id).then(result => {
+            _validateResultAndUpdate(result, res, body, false)
+        });
     }
 }
 
+function _validateResultAndUpdate(result, res, body, updateOnlyStatus) {
+    if (!result) {
+        Response.failed(res, Errors.invalidCategory);
+        return;
+    }
+
+    if (result.errors) {
+        Response.failed(res, Errors.unKnownErrorMsg);
+        return;
+    }
+
+    if (updateOnlyStatus) { _updateStatus(result, body, res); }
+    else { _updateCategory(result, body, res); }
+
+}
+
+function _updateStatus(result, body, res) {
+    result.status = body.status;
+    result.modifiedAt = Date();
+    result.save().then(value => {
+        Response.success(res, Errors.categoryStatusChanged, value);
+    });
+}
+
 function _updateCategory(result, body, res) {
+    result.categoryName = body.categoryName;
+    result.image = body.image;
     result.status = body.status;
     result.modifiedAt = Date();
     result.save().then(value => {

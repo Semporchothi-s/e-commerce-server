@@ -11,7 +11,7 @@ var category = new Schema({
     // Generic Bitmap	image/bmp	.bmp
     // Microsoft Bitmap	image/x-ms-bmp	.bmp
     // PDF	application/pdf	.pdf
-    mimeType: { type: String, required: true },
+    // mimeType: { type: String, required: true },
     status: {type: String, required: true, enum: ['ACTIVE', 'DISABLED'], default: 'ACTIVE' },
     createdAt: {type: String, required: true},
     modifiedAt: {type: String, required: false},
