@@ -1,6 +1,6 @@
 var category = require('../models/category');
 var Response = require('../response/response');
-var Errors = require('../constants/errors');
+var ResponseMsg = require('../constants/response_msg');
 var Constants = require('../constants/constants');
 const { isInvalidReq, isCategoryAvailable, createCategoryMap } = require('../helper_services/category_helper');
 
@@ -20,7 +20,7 @@ class Category {
         var body = req.body;
 
         if (!body.id) {
-            Response.failed(res, Errors.requiredCategoryId);
+            Response.failed(res, ResponseMsg.requiredCategoryId);
             return;
         } else {
             await _findAndSetStatus(body, res);
@@ -35,7 +35,7 @@ class Category {
     static async delete(req, res){
         var body = req.body;
         await category.deleteOne({_id: body.id}).then(value => {
-            Response.success(res, Errors.categoryRemoved, value);
+            Response.success(res, ResponseMsg.categoryRemoved, value);
         })
         
     }
@@ -44,9 +44,9 @@ class Category {
 
 async function _validateRequestAndSave(body, res) {
     if (isInvalidReq(body)) {
-        Response.failed(res, Errors.emptyFields);
+        Response.failed(res, ResponseMsg.emptyFields);
     } else if (await isCategoryAvailable(body)) {
-        Response.failed(res, Errors.categoryAlreadyExists);
+        Response.failed(res, ResponseMsg.categoryAlreadyExists);
     }
     else {
         var newCategory = createCategoryMap(body);
@@ -57,10 +57,10 @@ async function _validateRequestAndSave(body, res) {
 async function _saveCategory(newCategory, res) {
     await newCategory.save().then(value => {
         if (value.errors) {
-            Response.failed(res, Errors.categoryCreationFailed);
+            Response.failed(res, ResponseMsg.categoryCreationFailed);
             return;
         } else {
-            Response.success(res, Errors.categoryCreated, value);
+            Response.success(res, ResponseMsg.categoryCreated, value);
         }
     });
 }
@@ -73,12 +73,12 @@ async function _findAndSetStatus(body, res) {
 
 async function _validateAndUpdate(body, res){
     if (!body.id) {
-        Response.failed(res, Errors.requiredCategoryId);
+        Response.failed(res, ResponseMsg.requiredCategoryId);
         return;
     }
 
     if (isInvalidReq(body)) {
-        Response.failed(res, Errors.emptyFields);
+        Response.failed(res, ResponseMsg.emptyFields);
         return;
     }
 
@@ -91,12 +91,12 @@ async function _validateAndUpdate(body, res){
 
 function _validateResultAndUpdate(result, res, body, updateOnlyStatus) {
     if (!result) {
-        Response.failed(res, Errors.invalidCategory);
+        Response.failed(res, ResponseMsg.invalidCategory);
         return;
     }
 
     if (result.errors) {
-        Response.failed(res, Errors.unKnownErrorMsg);
+        Response.failed(res, ResponseMsg.unKnownErrorMsg);
         return;
     }
 
@@ -109,7 +109,7 @@ function _updateStatus(result, body, res) {
     result.status = body.status;
     result.modifiedAt = Date();
     result.save().then(value => {
-        Response.success(res, Errors.categoryStatusChanged, value);
+        Response.success(res, ResponseMsg.categoryStatusChanged, value);
     });
 }
 
@@ -119,7 +119,7 @@ function _updateCategory(result, body, res) {
     result.status = body.status;
     result.modifiedAt = Date();
     result.save().then(value => {
-        Response.success(res, Errors.categoryStatusChanged, value);
+        Response.success(res, ResponseMsg.categoryStatusChanged, value);
     });
 }
 
